@@ -6,7 +6,7 @@
                (map read-string nums-as-strings)))
 
 (defn subsets [n items]
-  "Thank you StackOverlfow!"
+  "Thank you Stack Overflow!"
   (cond
     (= n 0) '(())
     (empty? items) '()
