@@ -21,4 +21,4 @@
     [tuples (subsets cardinality l)]
     (first (filter #(= (apply + %) desired-sum) tuples))))
 
-;(findterms 3 2020 numbers)
+(apply * (findterms 3 2020 numbers))
