@@ -1,28 +1,24 @@
-(ns day-1-repair-report.core)
+(ns day-1-repair-report.core
+  (:require [clj-http.client :as client]))
 
-(defn check
-  [a b]
-  (= (+ a b) 2020))
+(def numbers (let [file-contents (slurp "resources/input.txt")
+                   nums-as-strings (clojure.string/split file-contents #"\n")]
+               (map read-string nums-as-strings)))
 
-(defn checklist
-  [a list]
-  (if (empty? list)
-    nil
-    (if (check a (first list))
-      (first list)
-      (checklist a (drop 1 list)))))
+(defn subsets [n items]
+  "Thank you StackOverlfow!"
+  (cond
+    (= n 0) '(())
+    (empty? items) '()
+    :else (concat (map
+                    #(cons (first items) %)
+                    (subsets (dec n) (rest items)))
+                  (subsets n (rest items)))))
 
-(def l '(2019 2020 2021))
+(defn findterms
+  [cardinality desired-sum l]
+  (let
+    [tuples (subsets cardinality l)]
+    (first (filter #(= (apply + %) desired-sum) tuples))))
 
-(defn checklists
-  [list1 list2]
-  (if (empty? list1)
-    nil
-    (let [addend (first list1)
-          answer (checklist addend list2)]
-      (println answer)
-      (if answer
-        [addend answer]
-        (checklists (drop 1 list1) list2)))))
-
-(def l2 '(2 3 1))
+;(findterms 3 2020 numbers)
