@@ -84,3 +84,34 @@
 ;   1-3 b: cdefg is invalid: neither position 1 nor position 3 contains b.
 ;   2-9 c: ccccccccc is invalid: both position 2 and position 9 contain c.
 ;How many passwords are valid according to the new interpretation of the policies?
+
+
+(defn xor
+  [a b]
+  (or
+    (and a (not b))
+    (and (not a) b)))
+
+;(println (xor true true))
+;(println (xor false false))
+;( (xor false true))
+;(println (xor true false))
+
+(defn valid2?
+  [datum]
+  (let
+    [low (Integer/parseInt (first datum))
+     high (Integer/parseInt (second datum))
+     letter (as-char (nth datum 2))
+     password (last datum)
+     low-letter (get password (dec low))
+     high-letter (get password (dec high))
+     low-hit (= letter low-letter)
+     high-hit (= letter high-letter)]
+    (println datum)
+    (print "Password " password "  low-letter " low-letter "  high-letter " high-letter)
+    (let [x (xor low-hit high-hit)]
+      (println "  Valid? " x)
+      x)))
+
+(println (count (filter #(valid2? %) data)))
