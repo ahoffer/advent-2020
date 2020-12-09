@@ -56,7 +56,15 @@
       (cons document (all-docs remaining-lines))
       (list document))))
 
-;(all-docs (take 3 input))
+(defn doc-to-map
+  [doc-str]
+  (let
+    [kv-pairs (clojure.string/split doc-str #"\s")
+     kv-vecs (map #(clojure.string/split % #":") kv-pairs)
+     doc-map (reduce #(assoc %1 (first %2) (second %2)) {} kv-vecs)]
+    doc-map))
 
-;(re-seq #"\w+:\w+" (consume-next-doc (take 1 input)))
-;(map #(clojure.string/split % #":") (clojure.string/split (first (consume-next-doc (take 1 input))) #"\s"))
+(def documents (all-docs input))
+
+(def document-data (map doc-to-map documents))
+
