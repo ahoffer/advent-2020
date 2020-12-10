@@ -1,5 +1,4 @@
-(ns day-1-repair-report.core
-  (:require [clj-http.client :as client]))
+(ns day-1-repair-report.core)
 
 (def numbers (let [file-contents (slurp "resources/input.txt")
                    nums-as-strings (clojure.string/split file-contents #"\n")]
