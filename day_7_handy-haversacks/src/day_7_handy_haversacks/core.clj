@@ -1,7 +1,5 @@
 (ns day-7-handy-haversacks.core)
 
-(def one-raw-input "light red bags contain 1 bright white bag, 2 muted yellow bags.")
-
 (def raw-sample-input
   '("light red bags contain 1 bright white bag, 2 muted yellow bags."
      "dark orange bags contain 3 bright white bags, 4 muted yellow bags."
@@ -90,4 +88,27 @@
        {}
        (let [contents (apply merge (map (fn [[k v]] {k (* cardinality v)}) rule))]
          (reduce (fn [c bag-id] (merge-with + c (expand-id bag-id rules (bag-id rule)))) contents (keys rule)))))))
+
+
+(def raw-input (clojure.string/split-lines (slurp "resources/input.txt")))
+
+(def real-rules (make-rules raw-input))
+
+(defn unwind
+  [rules]
+  (map (fn [k] {k (expand-id k rules)})
+       (keys rules)))
+
+(def unwound-real-rules (unwind real-rules))
+
+;(contains-particular-bag :shiny-gold (unwind sample-rules))
+(defn contains-particular-bag
+  [particular-bag-id unwound-rules]
+  (let []
+    (println (type (first unwound-rules)))
+    ;(filter
+    ;  #(contains? (% unwound-rules) particular-bag-id)
+    ;  (keys unwound-rules))
+    )
+  )
 
