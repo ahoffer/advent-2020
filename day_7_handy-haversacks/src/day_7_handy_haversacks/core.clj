@@ -75,22 +75,23 @@
 (def rules-2 (make-rules input-2))
 
 (defn print-loc [loc]
-  (if-not (zip/end? loc)
-    (println "loc " (zip/node loc)))
-  (recur (zip/next loc)))
+  (if (zip/end? loc)
+    (println ":end")
+    (do
+      (println "loc " (zip/node loc))
+      (print-loc (zip/next loc)))))
+
 
 
 ; (make-tree (zip/vector-zip []) :faded-blue rules-1)
-; (make-tree (zip/vector-zip []) :vibrant-plum rules-2)
+; (make-tree (zip/vector-zip []) :vibrant-plum rules-1)
 (defn make-tree
   ([id rules] (make-tree nil id rules))
   ([loc id rules]
    (let [item (rules id)]
-     (if-not loc (clojure.zip/vector-zip item))
+     (if-not loc (clojure.zip/vector-zip item)))))
 
-     )))
-
-
+;(defin buildtree)
 
 (defn arity [zipped-rule]
   (-> zipped-rule
