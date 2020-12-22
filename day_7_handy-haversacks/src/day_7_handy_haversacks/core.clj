@@ -1,5 +1,7 @@
 (ns day-7-handy-haversacks.core)
 (require '(clojure [zip :as zip]))
+(require '[taoensso.timbre :as timbre])
+
 (def z (zip/vector-zip [1 [:a :b] 2 3 [40 50 60]]))
 
 (def input-1
@@ -33,11 +35,9 @@
   (keyword (clojure.string/replace name " " "-")))
 
 
-
 (defn extract-id
   [line]
   (make-keyword (re-find #"^\w+ \w+" line)))
-
 
 
 ; (content-tokens (first input-1))
@@ -45,7 +45,6 @@
 (defn content-tokens
   [line]
   (map rest (re-seq #"(\d) (\w+ \w+)" line)))
-
 
 
 ; (make-content-nodes (first input-1))
@@ -59,17 +58,17 @@
             []
             token-groups)))
 
-
-
 ; (make-rule (first input-2))
 ; => {:light-red [[:bright-white 1] [:muted-yellow 2]]}
+; (make-rule (first input-2))
+;=> {:shiny-gold [[:dark-red 2]]}
 (defn make-rule
   [line]
   {(extract-id line) (make-content-nodes line)})
 
 
 (defn make-rules [lines]
-  (apply merge (map make-rule lines)))
+  (apply merge (into [] (map make-rule lines))))
 
 (def rules-1 (make-rules input-1))
 (def rules-2 (make-rules input-2))
@@ -81,17 +80,62 @@
       (println "loc " (zip/node loc))
       (print-loc (zip/next loc)))))
 
+; NOTES
+;Get the number of children. For example, Shiny gold has two children, dark olive and vibrant plum
+;(-> rules-1
+;    :shiny-gold
+;    zip/vector-zip
+;    zip/children
+;    count
+;    )
+
+; HOW TO NAVIGATE
+;(-> rules-1
+;    :shiny-gold
+;    zip/vector-zip
+;    zip/down
+;    zip/leftmost
+;    zip/right
+;    zip/node
+;    )
 
 
-; (make-tree (zip/vector-zip []) :faded-blue rules-1)
-; (make-tree (zip/vector-zip []) :vibrant-plum rules-1)
-(defn make-tree
-  ([id rules] (make-tree nil id rules))
-  ([loc id rules]
-   (let [item (rules id)]
-     (if-not loc (clojure.zip/vector-zip item)))))
+; (insert-child-at (zip/vector-zip (:shiny-gold rules-1)) :vibrant-purple)
+(defn insert-child-at
+  [tree id node]
+  "A node is any vector.
+  Returns a vector-as-tree.
+  Does NOT return a zipper (loc)"
+  (loop [loc tree]
+    (if (zip/end? loc)
+      (throw (AssertionError. "Could not find id."))
+      (let [value (zip/node loc)]
+        (if (= value id)
+          (zip/root (zip/insert-child (zip/up loc) node))
+          (recur (zip/next loc)))))))
 
-;(defin buildtree)
+; (expand-tree (rules-1 :vibrant-plum) rules-1)
+(defn expand-tree
+  [tree rules]
+  (let [input (zip/vector-zip tree)]
+    (if (not (clojure.zip/branch? input))
+      tree
+      (let [child-ids (filter keyword? (flatten (clojure.zip/children input)))]
+        (loop [loc input
+               ids child-ids]
+          (if (empty? ids)
+            (zip/root loc)
+
+            ;TODO: Call insert-child-at
+            (recur loc (rest ids))))))))
+
+;newly-inserted (clojure.zip/insert-child (zip/next loc) contents) ]
+;      newly-inserted )
+;) )
+
+
+;(println "single-id-for-testing\t" single-id-for-testing "contents\t" contents)
+;(print-loc (zip/root newly-inserted))
 
 (defn arity [zipped-rule]
   (-> zipped-rule
@@ -111,7 +155,6 @@
 
 ;(bag-name (zip/vector-zip [:light-red 1 [:bright-white 1 :muted-yellow 2]]))
 ;=> :light-red
-
 
 
 (defn bag-contents [zipped-rule]
