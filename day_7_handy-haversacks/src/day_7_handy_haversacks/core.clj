@@ -100,34 +100,35 @@
 ;    )
 
 
-; (insert-child-at (zip/vector-zip (:shiny-gold rules-1)) :vibrant-purple)
+; (insert-child-at (:shiny-gold rules-1) :vibrant-plum ["NODE"])
 (defn insert-child-at
   [tree id node]
   "A node is any vector.
   Returns a vector-as-tree.
   Does NOT return a zipper (loc)"
-  (loop [loc tree]
+  (loop [loc (zip/vector-zip tree)]
     (if (zip/end? loc)
-      (throw (AssertionError. "Could not find id."))
+      (throw (AssertionError. (str "Could not find id " id)))
       (let [value (zip/node loc)]
         (if (= value id)
           (zip/root (zip/insert-child (zip/up loc) node))
           (recur (zip/next loc)))))))
 
-; (expand-tree (rules-1 :vibrant-plum) rules-1)
-(defn expand-tree
-  [tree rules]
-  (let [input (zip/vector-zip tree)]
-    (if (not (clojure.zip/branch? input))
-      tree
-      (let [child-ids (filter keyword? (flatten (clojure.zip/children input)))]
-        (loop [loc input
-               ids child-ids]
-          (if (empty? ids)
-            (zip/root loc)
 
-            ;TODO: Call insert-child-at
-            (recur loc (rest ids))))))))
+; (expand-tree (rules-1 :vibrant-plum) rules-1)
+;(defn expand-tree
+;  [tree rules]
+;  (let [tree-loc (zip/vector-zip tree)]
+;    (if (not (clojure.zip/branch? tree-loc))
+;      tree
+;      (let [child-ids (filter keyword? (flatten (clojure.zip/children tree-loc)))]
+;        (loop [loc tree-loc
+;               ids child-ids]
+;          (if (empty? ids)
+;            (zip/root loc)
+;            (let [(insert-child-at  )]
+;              (println "ids\t" ids "loc\t" loc)
+;              (recur loc (rest ids)))))))))
 
 ;newly-inserted (clojure.zip/insert-child (zip/next loc) contents) ]
 ;      newly-inserted )
